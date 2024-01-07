@@ -8,6 +8,7 @@ import { translate } from "../i18n"
 import { DemoShowroomScreen, DemoDebugScreen } from "../screens"
 import { RedditScreen } from "../screens/RedditScreen"
 import { MetacriticScreen } from "../screens/MetacriticScreen"
+import { HomeScreen } from "../screens/HomeScreen"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
 
@@ -16,6 +17,7 @@ export type DemoTabParamList = {
   DemoDebug: undefined
   Reddit: undefined
   Metacritic: undefined
+  Home: undefined
 }
 
 /**
@@ -46,12 +48,13 @@ export function DemoNavigator() {
       }}
     >
       <Tab.Screen
-        name="DemoShowroom"
-        component={DemoShowroomScreen}
+        name="Home"
+        component={HomeScreen}
         options={{
-          tabBarLabel: translate("demoNavigator.componentsTab"),
+          tabBarAccessibilityLabel: "Home",
+          tabBarLabel: "Home",
           tabBarIcon: ({ focused }) => (
-            <Icon icon="components" color={focused ? colors.tint : undefined} size={30} />
+            <Icon icon="house" color={focused ? colors.tint : undefined} size={30} />
           ),
         }}
       />

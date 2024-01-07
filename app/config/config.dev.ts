@@ -8,5 +8,7 @@
 export default {
   //API_URL: "https://api.rss2json.com/v1/",
   // url to digital ocean droplet
-  API_URL: "http://165.22.6.21/v1/",
+  //API_URL: "http://165.22.6.21/v1/",
+  //API_URL: "http://164.90.252.244/v1/",
+  API_URL: "https://api.zekereyna.dev/v1/",
 }

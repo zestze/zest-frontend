@@ -64,7 +64,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer(
                 }
                 ListHeaderComponent={
                     <View style={$heading}>
-                        <Text preset="heading" text="Metacritic Posts" />
+                        <Text preset="heading" text="Metacritic" />
                         <SelectHeader
                             label="Medium"
                             helper="Select your medium"

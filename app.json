@@ -13,6 +13,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#191015"
     },
+    "extra": {
+      "eas": {
+        "projectId": "7151ac1d-beab-407f-b126-3cb262ecc396"
+      }
+    },
     "updates": {
       "fallbackToCacheTimeout": 0
     },
@@ -21,14 +26,14 @@
       "**/*"
     ],
     "android": {
-      "icon": "./assets/images/app-icon-android-legacy.png",
+      "icon": "./assets/images/beverage.png",
       "package": "com.zest",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
+        "foregroundImage": "./assets/images/beverage.png",
         "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"
       },
       "splash": {
-        "image": "./assets/images/splash-logo-android-universal.png",
+        "image": "./assets/images/beverage.png",
         "resizeMode": "contain",
         "backgroundColor": "#191015"
       }

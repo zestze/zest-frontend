@@ -86,7 +86,7 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer(
           }
           ListHeaderComponent={
             <View style={$heading}>
-              <Text preset="heading" text="Saved Reddit Posts" />
+              <Text preset="heading" text="Reddit" />
               <View style={$toggle}>
                 <SelectField
                   label="Subreddits"
