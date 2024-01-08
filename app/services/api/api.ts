@@ -8,7 +8,13 @@
 import { ApiResponse, ApisauceInstance, create } from "apisauce"
 import Config from "../../config"
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
-import type { ApiConfig, ApiDropletResponse, ApiFeedResponse, MetacriticItem, RedditItem } from "./api.types"
+import type {
+  ApiConfig,
+  ApiDropletResponse,
+  ApiFeedResponse,
+  MetacriticItem,
+  RedditItem,
+} from "./api.types"
 import type { EpisodeSnapshotIn } from "../../models/Episode"
 import type { RedditPostSnapshotIn } from "../../models/RedditPost"
 import { MetacriticPostSnapshotIn } from "app/models/Metacritic"
@@ -77,10 +83,10 @@ export class Api {
     }
   }
 
-  async getRedditPosts(): Promise<{ kind: "ok"; posts: RedditPostSnapshotIn[] } | GeneralApiProblem> {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
-      `reddit/posts`,
-    )
+  async getRedditPosts(): Promise<
+    { kind: "ok"; posts: RedditPostSnapshotIn[] } | GeneralApiProblem
+  > {
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`reddit/posts`)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -91,10 +97,9 @@ export class Api {
       const rawData = response.data
 
       const posts: RedditPostSnapshotIn[] =
-        (rawData?.posts as RedditItem[])
-          .map((raw: RedditItem) => ({
-            ...raw,
-          })) ?? []
+        (rawData?.posts as RedditItem[]).map((raw: RedditItem) => ({
+          ...raw,
+        })) ?? []
 
       return { kind: "ok", posts }
     } catch (e) {
@@ -106,9 +111,7 @@ export class Api {
   }
 
   async getSubreddits(): Promise<{ kind: "ok"; subreddits: string[] } | GeneralApiProblem> {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
-      `reddit/subreddits`,
-    )
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`reddit/subreddits`)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -127,9 +130,13 @@ export class Api {
     }
   }
 
-  async getMetacriticPosts(medium: string, minYear: number, maxYear: number): Promise<{ kind: "ok"; posts: MetacriticPostSnapshotIn[] } | GeneralApiProblem> {
+  async getMetacriticPosts(
+    medium: string,
+    minYear: number,
+    maxYear: number,
+  ): Promise<{ kind: "ok"; posts: MetacriticPostSnapshotIn[] } | GeneralApiProblem> {
     const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
-      `metacritic/posts?medium=${medium}&min_year=${minYear}&max_year=${maxYear}`
+      `metacritic/posts?medium=${medium}&min_year=${minYear}&max_year=${maxYear}`,
     )
 
     if (!response.ok) {
@@ -139,11 +146,12 @@ export class Api {
 
     try {
       const rawData = response.data
-      const posts: MetacriticPostSnapshotIn[] = (rawData?.posts as MetacriticItem[])
-        .map((raw: MetacriticItem) => ({
+      const posts: MetacriticPostSnapshotIn[] = (rawData?.posts as MetacriticItem[]).map(
+        (raw: MetacriticItem) => ({
           ...raw,
-          release_date: new Date(raw.release_date as string)
-        }))
+          release_date: new Date(raw.release_date as string),
+        }),
+      )
       return { kind: "ok", posts }
     } catch (e) {
       if (__DEV__ && e instanceof Error) {
@@ -153,7 +161,6 @@ export class Api {
     }
   }
 }
-
 
 // Singleton instance of the API for convenience
 export const api = new Api()

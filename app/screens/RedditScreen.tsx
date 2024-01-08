@@ -10,15 +10,7 @@ import {
   ViewStyle,
 } from "react-native"
 import { type ContentStyle } from "@shopify/flash-list"
-import {
-  Card,
-  EmptyState,
-  ListView,
-  Screen,
-  Text,
-  Toggle,
-  SelectField,
-} from "../components"
+import { Card, EmptyState, ListView, Screen, Text, Toggle, SelectField } from "../components"
 import { isRTL } from "../i18n"
 import { useStores } from "../models"
 import { RedditPost } from "../models/RedditPost"
@@ -29,107 +21,94 @@ import { openLinkInBrowser } from "../utils/openLinkInBrowser"
 
 const ICON_SIZE = 14
 
-export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer(
-  (_props) => {
-    const { redditStore } = useStores()
+export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) => {
+  const { redditStore } = useStores()
 
-    const [refreshing, setRefreshing] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-    const [sortByDate, setSortByDate] = useState(false)
-    const [selectedSubreddit, setSelectedSubreddit] = useState<string[]>([]);
+  const [refreshing, setRefreshing] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [sortByDate, setSortByDate] = useState(false)
+  const [selectedSubreddit, setSelectedSubreddit] = useState<string[]>([])
 
-    const postsForDisplay = redditStore.postsForDisplay(selectedSubreddit, sortByDate)
+  const postsForDisplay = redditStore.postsForDisplay(selectedSubreddit, sortByDate)
 
-    const subreddits = redditStore.subredditsForDisplay()
-      .map((sub: string) => ({ label: sub, value: sub }))
+  const subreddits = redditStore
+    .subredditsForDisplay()
+    .map((sub: string) => ({ label: sub, value: sub }))
 
-    // initially, kick off a background refresh without the refreshing UI
-    useEffect(() => {
-      ; (async function load() {
-        setIsLoading(true)
-        //await episodeStore.fetchEpisodes()
-        await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits()])
-        setIsLoading(false)
-      })()
-    }, [redditStore])
+  // initially, kick off a background refresh without the refreshing UI
+  useEffect(() => {
+    ;(async function load() {
+      setIsLoading(true)
+      //await episodeStore.fetchEpisodes()
+      await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits()])
+      setIsLoading(false)
+    })()
+  }, [redditStore])
 
-    // simulate a longer refresh, if the refresh is too fast for UX
-    async function manualRefresh() {
-      setRefreshing(true)
-      //await Promise.all([episodeStore.fetchEpisodes(), redditStore.fetchPosts(), delay(750)])
-      await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits(), delay(750)])
-      setRefreshing(false)
-    }
+  // simulate a longer refresh, if the refresh is too fast for UX
+  async function manualRefresh() {
+    setRefreshing(true)
+    //await Promise.all([episodeStore.fetchEpisodes(), redditStore.fetchPosts(), delay(750)])
+    await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits(), delay(750)])
+    setRefreshing(false)
+  }
 
-    return (
-      <Screen
-        preset="fixed"
-        safeAreaEdges={["top"]}
-        contentContainerStyle={$screenContentContainer}
-      >
-        <ListView<RedditPost>
-          contentContainerStyle={$listContentContainer}
-          data={postsForDisplay}
-          refreshing={refreshing}
-          estimatedItemSize={177}
-          onRefresh={manualRefresh}
-          ListEmptyComponent={
-            isLoading ? (
-              <ActivityIndicator />
-            ) : (
-              <EmptyState
-                preset="generic"
-                style={$emptyState}
-                buttonOnPress={manualRefresh}
-                imageStyle={$emptyStateImage}
-                ImageProps={{ resizeMode: "contain" }}
-              />
-            )
-          }
-          ListHeaderComponent={
-            <View style={$heading}>
-              <Text preset="heading" text="Reddit" />
-              <View style={$toggle}>
-                <SelectField
-                  label="Subreddits"
-                  helper="Select your subreddit(s)"
-                  placeholder="e.g. Tokyo"
-                  value={selectedSubreddit}
-                  onSelect={setSelectedSubreddit}
-                  options={subreddits}
-                  multiple={false}
-                  containerStyle={{ marginBottom: spacing.md }}
-                  style={$toggle}
-                />
-              </View>
-              <View style={$toggle}>
-                <Toggle
-                  value={sortByDate}
-                  onValueChange={() => setSortByDate(!sortByDate)}
-                  variant="switch"
-                  label="sort by date"
-                  labelPosition="left"
-                  labelStyle={$labelStyle}
-                />
-              </View>
-            </View>
-          }
-          renderItem={({ item }) => (
-            <RedditPostCard
-              post={item}
+  return (
+    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContentContainer}>
+      <ListView<RedditPost>
+        contentContainerStyle={$listContentContainer}
+        data={postsForDisplay}
+        refreshing={refreshing}
+        estimatedItemSize={177}
+        onRefresh={manualRefresh}
+        ListEmptyComponent={
+          isLoading ? (
+            <ActivityIndicator />
+          ) : (
+            <EmptyState
+              preset="generic"
+              style={$emptyState}
+              buttonOnPress={manualRefresh}
+              imageStyle={$emptyStateImage}
+              ImageProps={{ resizeMode: "contain" }}
             />
-          )}
-        />
-      </Screen >
-    )
-  },
-)
+          )
+        }
+        ListHeaderComponent={
+          <View style={$heading}>
+            <Text preset="heading" text="Reddit" />
+            <View style={$toggle}>
+              <SelectField
+                label="Subreddits"
+                helper="Select your subreddit(s)"
+                placeholder="e.g. Tokyo"
+                value={selectedSubreddit}
+                onSelect={setSelectedSubreddit}
+                options={subreddits}
+                multiple={false}
+                containerStyle={{ marginBottom: spacing.md }}
+                style={$toggle}
+              />
+            </View>
+            <View style={$toggle}>
+              <Toggle
+                value={sortByDate}
+                onValueChange={() => setSortByDate(!sortByDate)}
+                variant="switch"
+                label="sort by date"
+                labelPosition="left"
+                labelStyle={$labelStyle}
+              />
+            </View>
+          </View>
+        }
+        renderItem={({ item }) => <RedditPostCard post={item} />}
+      />
+    </Screen>
+  )
+})
 
-const RedditPostCard = observer(({
-  post,
-}: {
-  post: RedditPost
-}) => {
+const RedditPostCard = observer(({ post }: { post: RedditPost }) => {
   const handlePressCard = async () => {
     const url = `https://www.reddit.com${post.permalink}`
     openLinkInBrowser(url)
@@ -142,29 +121,19 @@ const RedditPostCard = observer(({
       onPress={handlePressCard}
       HeadingComponent={
         <View style={$metadata}>
-          <Text
-            style={$metadataText}
-            size="xxs"
-          >
+          <Text style={$metadataText} size="xxs">
             {post.subreddit}
           </Text>
-          <Text
-            style={$metadataText}
-            size="xxs"
-          >
+          <Text style={$metadataText} size="xxs">
             {post.score}
           </Text>
-          <Text
-            style={$metadataText}
-            size="xxs"
-          >
+          <Text style={$metadataText} size="xxs">
             {post.createdAt}
           </Text>
-        </View >
+        </View>
       }
       content={post.text}
-    >
-    </Card >
+    ></Card>
   )
 })
 

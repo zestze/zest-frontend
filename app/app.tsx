@@ -110,7 +110,7 @@ function App(props: AppProps) {
           </BottomSheetModalProvider>
         </GestureHandlerRootView>
       </ErrorBoundary>
-    </SafeAreaProvider >
+    </SafeAreaProvider>
   )
 }
 

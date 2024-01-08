@@ -67,7 +67,7 @@ export function DemoNavigator() {
           tabBarLabel: "Metacritic",
           tabBarIcon: ({ focused }) => (
             <Icon icon="film" color={focused ? colors.tint : undefined} size={30} />
-          )
+          ),
         }}
       />
 

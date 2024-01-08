@@ -4,55 +4,52 @@ import { spacing } from "../theme"
 import { Screen, Text } from "../components"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 
-
-export const HomeScreen: FC<DemoTabScreenProps<"Home">> = observer(
-    (_props) => {
-        return <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["top"]}>
-            <Text preset="heading" text={"Welcome"} style={$title} />
-            <Text style={$description}>
-                Zeke's saved reddit posts and (better) metacritic await.
-            </Text>
-            <Text style={$description}>
-                Visit the <Text preset="bold">Metacritic</Text> tab to view metacritic with an improved UX.
-                No more wack year scrolling.
-            </Text>
-            <Text style={$description}>
-                Visit the <Text preset="bold">Reddit</Text> tab to view Zeke's saved reddit posts with subreddit filtering and date/popularity sorting.
-            </Text>
-        </Screen>
-    }
-)
-
+export const HomeScreen: FC<DemoTabScreenProps<"Home">> = observer((_props) => {
+  return (
+    <Screen preset="scroll" contentContainerStyle={$container} safeAreaEdges={["top"]}>
+      <Text preset="heading" text={"Welcome"} style={$title} />
+      <Text style={$description}>Zeke's saved reddit posts and (better) metacritic await.</Text>
+      <Text style={$description}>
+        Visit the <Text preset="bold">Metacritic</Text> tab to view metacritic with an improved UX.
+        No more wack year scrolling.
+      </Text>
+      <Text style={$description}>
+        Visit the <Text preset="bold">Reddit</Text> tab to view Zeke's saved reddit posts with
+        subreddit filtering and date/popularity sorting.
+      </Text>
+    </Screen>
+  )
+})
 
 const $container: ViewStyle = {
-    paddingTop: spacing.lg + spacing.xl,
-    paddingHorizontal: spacing.lg,
+  paddingTop: spacing.lg + spacing.xl,
+  paddingHorizontal: spacing.lg,
 }
 
 const $title: TextStyle = {
-    marginBottom: spacing.sm,
+  marginBottom: spacing.sm,
 }
 
 const $tagline: TextStyle = {
-    marginBottom: spacing.xxl,
+  marginBottom: spacing.xxl,
 }
 
 const $description: TextStyle = {
-    marginBottom: spacing.lg,
+  marginBottom: spacing.lg,
 }
 
 const $sectionTitle: TextStyle = {
-    marginTop: spacing.xxl,
+  marginTop: spacing.xxl,
 }
 
 const $logoContainer: ViewStyle = {
-    marginEnd: spacing.md,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignContent: "center",
+  marginEnd: spacing.md,
+  flexDirection: "row",
+  flexWrap: "wrap",
+  alignContent: "center",
 }
 
 const $logo: ImageStyle = {
-    height: 38,
-    width: 38,
+  height: 38,
+  width: 38,
 }
