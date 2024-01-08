@@ -2,7 +2,9 @@ import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
 import {
   ActivityIndicator,
+  Alert,
   ImageStyle,
+  Linking,
   TextStyle,
   View,
   ViewStyle,
@@ -128,8 +130,9 @@ const RedditPostCard = observer(({
 }: {
   post: RedditPost
 }) => {
-  const handlePressCard = () => {
-    openLinkInBrowser(`https://www.reddit.com${post.permalink}`)
+  const handlePressCard = async () => {
+    const url = `https://www.reddit.com${post.permalink}`
+    openLinkInBrowser(url)
   }
 
   return (
