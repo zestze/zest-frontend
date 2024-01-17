@@ -20,7 +20,7 @@ export const MetacriticStoreModel = types
     },
   }))
   .views((store) => ({
-    postsForDisplay(sortByDate: boolean = false): MetacriticPost[] {
+    postsForDisplay(sortByDate = false): MetacriticPost[] {
       const posts = store.posts.slice()
       if (!sortByDate) {
         return posts

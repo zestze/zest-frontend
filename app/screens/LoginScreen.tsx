@@ -5,8 +5,9 @@ import { Button, Icon, Screen, Text, TextField, TextFieldAccessoryProps } from "
 import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
+import { api } from "../services/api"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
+interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const authPasswordInput = useRef<TextInput>(null)
@@ -16,14 +17,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, validationError },
+    authenticationStore: { authEmail, setAuthEmail, setAuthToken, distributeAuthToken, setExpiresAt, validationError },
   } = useStores()
 
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("ignite@infinite.red")
-    setAuthPassword("ign1teIsAwes0m3")
+    setAuthEmail("zestyzeke")
+    setAuthPassword("reynareyna")
 
     // Return a "cleanup" function that React will run when the component unmounts
     return () => {
@@ -34,7 +35,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
   const error = isSubmitted ? validationError : ""
 
-  function login() {
+  async function login() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
 
@@ -42,12 +43,19 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
 
     // Make a request to your server to get an authentication token.
     // If successful, reset the fields and set the token.
-    setIsSubmitted(false)
-    setAuthPassword("")
-    setAuthEmail("")
+    const response = await api.loginUser(authEmail, authPassword)
+    if (response.kind === "ok") {
+      const { token, expiresAt } = response
+      // console.log("token is: ", value.token)
+      setAuthToken(token)
+      setExpiresAt(expiresAt)
+      distributeAuthToken(token)
+      setIsSubmitted(false)
+      setAuthEmail("")
+      setAuthPassword("")
+    }
+    // TODO(zeke): prompt user if login failed!
 
-    // We'll mock this with a fake token.
-    setAuthToken(String(Date.now()))
   }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(

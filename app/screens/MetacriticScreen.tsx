@@ -20,13 +20,13 @@ import { useStores } from "../models"
 import { delay } from "../utils/delay"
 import { isRTL } from "app/i18n"
 
-const minYear: number = 1990
-const defaultStartYear: number = 2022
-const maxYear: number = 2024
+const minYear = 1990
+const defaultStartYear = 2022
+const maxYear = 2024
 const defaultEndYear: number = maxYear
 
 export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((_props) => {
-  const { metacriticStore } = useStores()
+  const { authenticationStore: { authWillExpire, refresh }, metacriticStore } = useStores()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
@@ -38,6 +38,10 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
   const [sortByDate, setSortByDate] = useState<boolean>(false)
 
   useEffect(() => {
+    if (authWillExpire) refresh()
+  }, [authWillExpire])
+
+  useEffect(() => {
     // TODO(zeke): grey out options instead!
     if (startYear > endYear) {
       Alert.alert("invalid year parameters; overwriting with defaults")
@@ -45,7 +49,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
       setEndYear(defaultEndYear)
       return
     }
-    ;(async function load() {
+    ; (async function load() {
       setIsLoading(true)
       await metacriticStore.fetchPosts(medium, startYear, endYear)
       setIsLoading(false)
@@ -208,7 +212,7 @@ interface SelectHeaderProps {
 const SelectHeader = observer((props: SelectHeaderProps) => {
   const { label, helper, placeholder, value, setter, options, spacing } = props
   const handleSelect =
-    typeof value == "number"
+    typeof value === "number"
       ? (newValue: string[]) => (setter as Setter<number>)(parseInt(newValue[0]))
       : (newValue: string[]) => (setter as Setter<string>)(newValue[0])
 

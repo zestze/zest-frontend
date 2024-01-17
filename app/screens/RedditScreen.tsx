@@ -22,12 +22,16 @@ import { openLinkInBrowser } from "../utils/openLinkInBrowser"
 const ICON_SIZE = 14
 
 export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) => {
-  const { redditStore } = useStores()
+  const { authenticationStore: { authWillExpire, refresh }, redditStore } = useStores()
 
   const [refreshing, setRefreshing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [sortByDate, setSortByDate] = useState(false)
   const [selectedSubreddit, setSelectedSubreddit] = useState<string[]>([])
+
+  useEffect(() => {
+    if (authWillExpire) refresh()
+  }, [authWillExpire])
 
   const postsForDisplay = redditStore.postsForDisplay(selectedSubreddit, sortByDate)
 
@@ -37,9 +41,9 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
 
   // initially, kick off a background refresh without the refreshing UI
   useEffect(() => {
-    ;(async function load() {
+    ; (async function load() {
       setIsLoading(true)
-      //await episodeStore.fetchEpisodes()
+      // await episodeStore.fetchEpisodes()
       await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits()])
       setIsLoading(false)
     })()
@@ -48,7 +52,7 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
   // simulate a longer refresh, if the refresh is too fast for UX
   async function manualRefresh() {
     setRefreshing(true)
-    //await Promise.all([episodeStore.fetchEpisodes(), redditStore.fetchPosts(), delay(750)])
+    // await Promise.all([episodeStore.fetchEpisodes(), redditStore.fetchPosts(), delay(750)])
     await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits(), delay(750)])
     setRefreshing(false)
   }

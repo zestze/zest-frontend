@@ -86,7 +86,7 @@ export class Api {
   async getRedditPosts(): Promise<
     { kind: "ok"; posts: RedditPostSnapshotIn[] } | GeneralApiProblem
   > {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`reddit/posts`)
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`v1/reddit/posts`)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -111,7 +111,7 @@ export class Api {
   }
 
   async getSubreddits(): Promise<{ kind: "ok"; subreddits: string[] } | GeneralApiProblem> {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`reddit/subreddits`)
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`v1/reddit/subreddits`)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -136,7 +136,7 @@ export class Api {
     maxYear: number,
   ): Promise<{ kind: "ok"; posts: MetacriticPostSnapshotIn[] } | GeneralApiProblem> {
     const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
-      `metacritic/posts?medium=${medium}&min_year=${minYear}&max_year=${maxYear}`,
+      `v1/metacritic/posts?medium=${medium}&min_year=${minYear}&max_year=${maxYear}`,
     )
 
     if (!response.ok) {
@@ -159,6 +159,72 @@ export class Api {
       }
       return { kind: "bad-data" }
     }
+  }
+
+  async loginUser(
+    username: string,
+    password: string,
+  ): Promise<{ kind: "ok"; token: string; expiresAt: Date } | GeneralApiProblem> {
+    console.log(`username: ${username} password: ${password}`)
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.post(
+      `login`, JSON.stringify({ username, password }),
+      { headers: { "Content-Type": "application/json" } })
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+    }
+
+    try {
+      const cookie: string | undefined = response.headers?.['set-cookie']
+      if (cookie === undefined) {
+        return { kind: "unauthorized" }
+      }
+
+      const { token, expiresAt } = this.extractFromCookie(cookie)
+      // if I don't do `${token}` it does some weird stuff
+      return { kind: "ok", token: `${token}`, expiresAt }
+    } catch (e) {
+      if (__DEV__ && e instanceof Error) {
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+      }
+      return { kind: "bad-data" }
+    }
+  }
+
+  async refreshCreds(): Promise<{ kind: "ok"; token: string; expiresAt: Date } | GeneralApiProblem> {
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.post('refresh')
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+    }
+
+    try {
+      const cookie: string | undefined = response.headers?.['set-cookie']
+      if (cookie === undefined) {
+        return { kind: "unauthorized" }
+      }
+
+      const { token, expiresAt } = this.extractFromCookie(cookie)
+      // if I don't do `${token}` it does some weird stuff
+      return { kind: "ok", token: `${token}`, expiresAt }
+    } catch (e) {
+      if (__DEV__ && e instanceof Error) {
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+      }
+      return { kind: "bad-data" }
+    }
+  }
+
+  // grab the cookie and the expiration date from the header
+  // might look like: 
+  // zest-token=be1d80f8-8fac-4eea-8627-b428c705ccd6; Expires=Wed, 17 Jan 2024 13:17:49 GMT
+  extractFromCookie(header: string | object) {
+    const parts = header.toString().split(';')
+    const token: string = parts[0]
+    const expiresAt: Date = new Date(parts[1].split("Expires=")[1])
+    return { token, expiresAt }
   }
 }
 
