@@ -23,8 +23,9 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   useEffect(() => {
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
-    setAuthEmail("zestyzeke")
-    setAuthPassword("reynareyna")
+    // TODO(zeke): load from keychain!
+    setAuthEmail("example")
+    setAuthPassword("example")
 
     // Return a "cleanup" function that React will run when the component unmounts
     return () => {
@@ -131,10 +132,6 @@ const $screenContentContainer: ViewStyle = {
 
 const $signIn: TextStyle = {
   marginBottom: spacing.sm,
-}
-
-const $enterDetails: TextStyle = {
-  marginBottom: spacing.lg,
 }
 
 const $hint: TextStyle = {

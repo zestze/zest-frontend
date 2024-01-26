@@ -2,9 +2,7 @@ import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
 import {
   ActivityIndicator,
-  Alert,
   ImageStyle,
-  Linking,
   TextStyle,
   View,
   ViewStyle,
@@ -26,14 +24,14 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
 
   const [refreshing, setRefreshing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [sortByDate, setSortByDate] = useState(false)
+  const [sortByScore, setSortByScore] = useState(false)
   const [selectedSubreddit, setSelectedSubreddit] = useState<string[]>([])
 
   useEffect(() => {
     if (authWillExpire) refresh()
   }, [authWillExpire])
 
-  const postsForDisplay = redditStore.postsForDisplay(selectedSubreddit, sortByDate)
+  const postsForDisplay = redditStore.postsForDisplay(sortByScore)
 
   const subreddits = redditStore
     .subredditsForDisplay()
@@ -44,16 +42,19 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
     ; (async function load() {
       setIsLoading(true)
       // await episodeStore.fetchEpisodes()
-      await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits()])
+      await Promise.all([redditStore.fetchSubreddits(),
+      redditStore.fetchPosts(selectedSubreddit.length > 0 ? selectedSubreddit[0] : undefined)])
       setIsLoading(false)
     })()
-  }, [redditStore])
+  }, [redditStore, JSON.stringify(selectedSubreddit)])
 
   // simulate a longer refresh, if the refresh is too fast for UX
   async function manualRefresh() {
     setRefreshing(true)
     // await Promise.all([episodeStore.fetchEpisodes(), redditStore.fetchPosts(), delay(750)])
-    await Promise.all([redditStore.fetchPosts(), redditStore.fetchSubreddits(), delay(750)])
+    await Promise.all([redditStore.fetchSubreddits(),
+    redditStore.fetchPosts(selectedSubreddit.length > 0 ? selectedSubreddit[0] : undefined),
+    delay(750)])
     setRefreshing(false)
   }
 
@@ -96,10 +97,10 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
             </View>
             <View style={$toggle}>
               <Toggle
-                value={sortByDate}
-                onValueChange={() => setSortByDate(!sortByDate)}
+                value={sortByScore}
+                onValueChange={() => setSortByScore(!sortByScore)}
                 variant="switch"
-                label="sort by date"
+                label="sort by score"
                 labelPosition="left"
                 labelStyle={$labelStyle}
               />
@@ -162,11 +163,13 @@ const $item: ViewStyle = {
   minHeight: 120,
 }
 
+/*
 const $itemThumbnail: ImageStyle = {
   marginTop: spacing.sm,
   borderRadius: 50,
   alignSelf: "flex-start",
 }
+*/
 
 const $toggle: ViewStyle = {
   marginTop: spacing.md,
@@ -176,12 +179,14 @@ const $labelStyle: TextStyle = {
   textAlign: "left",
 }
 
+/*
 const $iconContainer: ViewStyle = {
   height: ICON_SIZE,
   width: ICON_SIZE,
   flexDirection: "row",
   marginEnd: spacing.sm,
 }
+*/
 
 const $metadata: TextStyle = {
   color: colors.textDim,
@@ -195,6 +200,7 @@ const $metadataText: TextStyle = {
   marginBottom: spacing.xs,
 }
 
+/*
 const $favoriteButton: ViewStyle = {
   borderRadius: 17,
   marginTop: spacing.md,
@@ -212,6 +218,7 @@ const $unFavoriteButton: ViewStyle = {
   borderColor: colors.palette.primary100,
   backgroundColor: colors.palette.primary100,
 }
+*/
 
 const $emptyState: ViewStyle = {
   marginTop: spacing.xxl,

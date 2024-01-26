@@ -31,11 +31,11 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
 
-  const [medium, setMedium] = useState<string>("switch")
+  const [medium, setMedium] = useState<string>("movie")
   const [startYear, setStartYear] = useState<number>(defaultStartYear)
   const [endYear, setEndYear] = useState<number>(defaultEndYear)
 
-  const [sortByDate, setSortByDate] = useState<boolean>(false)
+  const [sortByScore, setSortByScore] = useState<boolean>(false)
 
   useEffect(() => {
     if (authWillExpire) refresh()
@@ -66,7 +66,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContentContainer}>
       <ListView<MetacriticPost>
         contentContainerStyle={$listContentContainer}
-        data={metacriticStore.postsForDisplay(sortByDate)}
+        data={metacriticStore.postsForDisplay(sortByScore)}
         refreshing={refreshing}
         estimatedItemSize={177}
         onRefresh={manualRefresh}
@@ -115,10 +115,10 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
             />
             <View style={$toggle}>
               <Toggle
-                value={sortByDate}
-                onValueChange={() => setSortByDate(!sortByDate)}
+                value={sortByScore}
+                onValueChange={() => setSortByScore(!sortByScore)}
                 variant="switch"
-                label="sort by date"
+                label="sort by score"
                 labelPosition="left"
                 labelStyle={$labelStyle}
               />

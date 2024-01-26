@@ -20,17 +20,17 @@ export const MetacriticStoreModel = types
     },
   }))
   .views((store) => ({
-    postsForDisplay(sortByDate = false): MetacriticPost[] {
+    postsForDisplay(sortByScore = false): MetacriticPost[] {
       const posts = store.posts.slice()
-      if (!sortByDate) {
+      if (!sortByScore) {
         return posts
       }
       return posts.sort(
         (a: MetacriticPost, b: MetacriticPost) =>
-          b.release_date.getTime() - a.release_date.getTime(),
+          b.score - a.score,
       )
     },
   }))
 
-export interface MetacriticStore extends Instance<typeof MetacriticStoreModel> {}
-export interface MetacriticStoreSnapshot extends SnapshotOut<typeof MetacriticStoreModel> {}
+export interface MetacriticStore extends Instance<typeof MetacriticStoreModel> { }
+export interface MetacriticStoreSnapshot extends SnapshotOut<typeof MetacriticStoreModel> { }

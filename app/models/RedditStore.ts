@@ -11,8 +11,8 @@ export const RedditStoreModel = types
   })
   .actions(withSetPropAction)
   .actions((store) => ({
-    async fetchPosts() {
-      const response = await api.getRedditPosts()
+    async fetchPosts(subreddit?: string) {
+      const response = await api.getRedditPosts(subreddit)
       if (response.kind === "ok") {
         store.setProp("posts", response.posts)
       } else {
@@ -30,18 +30,13 @@ export const RedditStoreModel = types
     },
   }))
   .views((store) => ({
-    postsForDisplay(subreddits: string[], sortByDate: boolean): RedditPost[] {
+    postsForDisplay(sortByScore: boolean): RedditPost[] {
       return store.posts
         .slice()
-        .filter(
-          subreddits.length > 0
-            ? (post: RedditPost) => post.subreddit === subreddits[0]
-            : () => true,
-        )
         .sort(
-          sortByDate
-            ? (a: RedditPost, b: RedditPost) => b.created_utc - a.created_utc
-            : (a: RedditPost, b: RedditPost) => b.score - a.score,
+          sortByScore
+            ? (a: RedditPost, b: RedditPost) => b.score - a.score
+            : (a: RedditPost, b: RedditPost) => b.created_utc - a.created_utc,
         )
     },
 
@@ -59,5 +54,5 @@ export const RedditStoreModel = types
     },
   }))
 
-export interface RedditStore extends Instance<typeof RedditStoreModel> {}
-export interface RedditStoreSnapshot extends SnapshotOut<typeof RedditStoreModel> {}
+export interface RedditStore extends Instance<typeof RedditStoreModel> { }
+export interface RedditStoreSnapshot extends SnapshotOut<typeof RedditStoreModel> { }

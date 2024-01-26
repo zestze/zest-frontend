@@ -11,11 +11,9 @@ import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
 import type {
   ApiConfig,
   ApiDropletResponse,
-  ApiFeedResponse,
   MetacriticItem,
   RedditItem,
 } from "./api.types"
-import type { EpisodeSnapshotIn } from "../../models/Episode"
 import type { RedditPostSnapshotIn } from "../../models/RedditPost"
 import { MetacriticPostSnapshotIn } from "app/models/Metacritic"
 
@@ -49,44 +47,11 @@ export class Api {
     })
   }
 
-  /**
-   * Gets a list of recent React Native Radio episodes.
-   */
-  async getEpisodes(): Promise<{ kind: "ok"; episodes: EpisodeSnapshotIn[] } | GeneralApiProblem> {
-    // make the api call
-    const response: ApiResponse<ApiFeedResponse> = await this.apisauce.get(
-      `api.json?rss_url=https%3A%2F%2Ffeeds.simplecast.com%2FhEI_f9Dx`,
-    )
-
-    // the typical ways to die when calling an api
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response)
-      if (problem) return problem
-    }
-
-    // transform the data into the format we are expecting
-    try {
-      const rawData = response.data
-
-      // This is where we transform the data into the shape we expect for our MST model.
-      const episodes: EpisodeSnapshotIn[] =
-        rawData?.items.map((raw) => ({
-          ...raw,
-        })) ?? []
-
-      return { kind: "ok", episodes }
-    } catch (e) {
-      if (__DEV__ && e instanceof Error) {
-        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
-      }
-      return { kind: "bad-data" }
-    }
-  }
-
-  async getRedditPosts(): Promise<
+  async getRedditPosts(subreddit?: string): Promise<
     { kind: "ok"; posts: RedditPostSnapshotIn[] } | GeneralApiProblem
   > {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`v1/reddit/posts`)
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
+      subreddit ? `v1/reddit/posts?subreddit=${subreddit}` : `v1/reddit/posts`)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
