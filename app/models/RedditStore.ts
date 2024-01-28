@@ -54,5 +54,5 @@ export const RedditStoreModel = types
     },
   }))
 
-export interface RedditStore extends Instance<typeof RedditStoreModel> { }
-export interface RedditStoreSnapshot extends SnapshotOut<typeof RedditStoreModel> { }
+export interface RedditStore extends Instance<typeof RedditStoreModel> {}
+export interface RedditStoreSnapshot extends SnapshotOut<typeof RedditStoreModel> {}

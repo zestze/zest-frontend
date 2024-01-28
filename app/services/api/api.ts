@@ -8,12 +8,7 @@
 import { ApiResponse, ApisauceInstance, create } from "apisauce"
 import Config from "../../config"
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
-import type {
-  ApiConfig,
-  ApiDropletResponse,
-  MetacriticItem,
-  RedditItem,
-} from "./api.types"
+import type { ApiConfig, ApiDropletResponse, MetacriticItem, RedditItem } from "./api.types"
 import type { RedditPostSnapshotIn } from "../../models/RedditPost"
 import { MetacriticPostSnapshotIn } from "app/models/Metacritic"
 
@@ -47,11 +42,12 @@ export class Api {
     })
   }
 
-  async getRedditPosts(subreddit?: string): Promise<
-    { kind: "ok"; posts: RedditPostSnapshotIn[] } | GeneralApiProblem
-  > {
+  async getRedditPosts(
+    subreddit?: string,
+  ): Promise<{ kind: "ok"; posts: RedditPostSnapshotIn[] } | GeneralApiProblem> {
     const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
-      subreddit ? `v1/reddit/posts?subreddit=${subreddit}` : `v1/reddit/posts`)
+      subreddit ? `v1/reddit/posts?subreddit=${subreddit}` : `v1/reddit/posts`,
+    )
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -76,7 +72,9 @@ export class Api {
   }
 
   async getSubreddits(): Promise<{ kind: "ok"; subreddits: string[] } | GeneralApiProblem> {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(`v1/reddit/subreddits`)
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
+      `v1/reddit/subreddits`,
+    )
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -132,8 +130,10 @@ export class Api {
   ): Promise<{ kind: "ok"; token: string; expiresAt: Date } | GeneralApiProblem> {
     console.log(`username: ${username} password: ${password}`)
     const response: ApiResponse<ApiDropletResponse> = await this.apisauce.post(
-      `login`, JSON.stringify({ username, password }),
-      { headers: { "Content-Type": "application/json" } })
+      `login`,
+      JSON.stringify({ username, password }),
+      { headers: { "Content-Type": "application/json" } },
+    )
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -141,7 +141,7 @@ export class Api {
     }
 
     try {
-      const cookie: string | undefined = response.headers?.['set-cookie']
+      const cookie: string | undefined = response.headers?.["set-cookie"]
       if (cookie === undefined) {
         return { kind: "unauthorized" }
       }
@@ -157,8 +157,10 @@ export class Api {
     }
   }
 
-  async refreshCreds(): Promise<{ kind: "ok"; token: string; expiresAt: Date } | GeneralApiProblem> {
-    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.post('refresh')
+  async refreshCreds(): Promise<
+    { kind: "ok"; token: string; expiresAt: Date } | GeneralApiProblem
+  > {
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.post("refresh")
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)
@@ -166,7 +168,7 @@ export class Api {
     }
 
     try {
-      const cookie: string | undefined = response.headers?.['set-cookie']
+      const cookie: string | undefined = response.headers?.["set-cookie"]
       if (cookie === undefined) {
         return { kind: "unauthorized" }
       }
@@ -183,10 +185,10 @@ export class Api {
   }
 
   // grab the cookie and the expiration date from the header
-  // might look like: 
+  // might look like:
   // zest-token=be1d80f8-8fac-4eea-8627-b428c705ccd6; Expires=Wed, 17 Jan 2024 13:17:49 GMT
   extractFromCookie(header: string | object) {
-    const parts = header.toString().split(';')
+    const parts = header.toString().split(";")
     const token: string = parts[0]
     const expiresAt: Date = new Date(parts[1].split("Expires=")[1])
     return { token, expiresAt }

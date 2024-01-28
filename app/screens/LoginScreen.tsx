@@ -7,7 +7,7 @@ import { AppStackScreenProps } from "../navigators"
 import { colors, spacing } from "../theme"
 import { api } from "../services/api"
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> { }
+interface LoginScreenProps extends AppStackScreenProps<"Login"> {}
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const authPasswordInput = useRef<TextInput>(null)
@@ -17,7 +17,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
   const {
-    authenticationStore: { authEmail, setAuthEmail, setAuthToken, distributeAuthToken, setExpiresAt, validationError },
+    authenticationStore: {
+      authEmail,
+      setAuthEmail,
+      setAuthToken,
+      distributeAuthToken,
+      setExpiresAt,
+      validationError,
+    },
   } = useStores()
 
   useEffect(() => {
@@ -56,7 +63,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       setAuthPassword("")
     }
     // TODO(zeke): prompt user if login failed!
-
   }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(

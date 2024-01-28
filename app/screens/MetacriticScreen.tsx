@@ -26,7 +26,10 @@ const maxYear = 2024
 const defaultEndYear: number = maxYear
 
 export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((_props) => {
-  const { authenticationStore: { authWillExpire, refresh }, metacriticStore } = useStores()
+  const {
+    authenticationStore: { authWillExpire, refresh },
+    metacriticStore,
+  } = useStores()
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [refreshing, setRefreshing] = useState<boolean>(false)
@@ -49,7 +52,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
       setEndYear(defaultEndYear)
       return
     }
-    ; (async function load() {
+    ;(async function load() {
       setIsLoading(true)
       await metacriticStore.fetchPosts(medium, startYear, endYear)
       setIsLoading(false)
@@ -161,7 +164,7 @@ const MetacriticPostCard = observer(({ post }: { post: MetacriticPost }) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-        <Pressable onPress={() => setModalVisible(false)} style={{ flex: 1 }}>
+        <Pressable onPress={() => setModalVisible(false)} style={$screenContentContainer}>
           <Card
             style={$item}
             onPress={handlePressCard}

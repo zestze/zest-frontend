@@ -12,7 +12,7 @@ export const AuthenticationStoreModel = types
   .views((store) => ({
     get isAuthenticated() {
       const now = new Date()
-      return !!store.authToken && (store.expiresAt !== undefined && now < store.expiresAt)
+      return !!store.authToken && store.expiresAt !== undefined && now < store.expiresAt
     },
     get validationError() {
       if (store.authEmail.length === 0) return "can't be blank"
@@ -23,9 +23,11 @@ export const AuthenticationStoreModel = types
     },
     get authWillExpire() {
       const now = new Date()
-      const fiveMinutes = 5 * 60 * 1000;
-      return store.expiresAt !== undefined && (now.getTime() - store.expiresAt.getTime() < fiveMinutes)
-    }
+      const fiveMinutes = 5 * 60 * 1000
+      return (
+        store.expiresAt !== undefined && now.getTime() - store.expiresAt.getTime() < fiveMinutes
+      )
+    },
   }))
   .actions(withSetPropAction)
   .actions((store) => ({
@@ -51,20 +53,18 @@ export const AuthenticationStoreModel = types
       }
     },
     async refresh() {
-      api.refreshCreds().then(
-        (value) => {
-          if (value.kind === "ok") {
-            const { token, expiresAt } = value
-            store.setProp("authToken", token)
-            store.setProp("expiresAt", expiresAt)
-            api.apisauce.setHeader("Cookie", token)
-          } else {
-            console.error(`Error refreshing creds: ${JSON.stringify(value)}`)
-          }
+      api.refreshCreds().then((value) => {
+        if (value.kind === "ok") {
+          const { token, expiresAt } = value
+          store.setProp("authToken", token)
+          store.setProp("expiresAt", expiresAt)
+          api.apisauce.setHeader("Cookie", token)
+        } else {
+          console.error(`Error refreshing creds: ${JSON.stringify(value)}`)
         }
-      )
-    }
+      })
+    },
   }))
 
-export interface AuthenticationStore extends Instance<typeof AuthenticationStoreModel> { }
-export interface AuthenticationStoreSnapshot extends SnapshotOut<typeof AuthenticationStoreModel> { }
+export interface AuthenticationStore extends Instance<typeof AuthenticationStoreModel> {}
+export interface AuthenticationStoreSnapshot extends SnapshotOut<typeof AuthenticationStoreModel> {}

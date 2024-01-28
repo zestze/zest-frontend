@@ -1,12 +1,6 @@
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useState } from "react"
-import {
-  ActivityIndicator,
-  ImageStyle,
-  TextStyle,
-  View,
-  ViewStyle,
-} from "react-native"
+import { ActivityIndicator, ImageStyle, TextStyle, View, ViewStyle } from "react-native"
 import { type ContentStyle } from "@shopify/flash-list"
 import { Card, EmptyState, ListView, Screen, Text, Toggle, SelectField } from "../components"
 import { isRTL } from "../i18n"
@@ -17,10 +11,13 @@ import { colors, spacing } from "../theme"
 import { delay } from "../utils/delay"
 import { openLinkInBrowser } from "../utils/openLinkInBrowser"
 
-const ICON_SIZE = 14
+// const ICON_SIZE = 14
 
 export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) => {
-  const { authenticationStore: { authWillExpire, refresh }, redditStore } = useStores()
+  const {
+    authenticationStore: { authWillExpire, refresh },
+    redditStore,
+  } = useStores()
 
   const [refreshing, setRefreshing] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -39,11 +36,13 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
 
   // initially, kick off a background refresh without the refreshing UI
   useEffect(() => {
-    ; (async function load() {
+    ;(async function load() {
       setIsLoading(true)
       // await episodeStore.fetchEpisodes()
-      await Promise.all([redditStore.fetchSubreddits(),
-      redditStore.fetchPosts(selectedSubreddit.length > 0 ? selectedSubreddit[0] : undefined)])
+      await Promise.all([
+        redditStore.fetchSubreddits(),
+        redditStore.fetchPosts(selectedSubreddit.length > 0 ? selectedSubreddit[0] : undefined),
+      ])
       setIsLoading(false)
     })()
   }, [redditStore, JSON.stringify(selectedSubreddit)])
@@ -52,9 +51,11 @@ export const RedditScreen: FC<DemoTabScreenProps<"Reddit">> = observer((_props) 
   async function manualRefresh() {
     setRefreshing(true)
     // await Promise.all([episodeStore.fetchEpisodes(), redditStore.fetchPosts(), delay(750)])
-    await Promise.all([redditStore.fetchSubreddits(),
-    redditStore.fetchPosts(selectedSubreddit.length > 0 ? selectedSubreddit[0] : undefined),
-    delay(750)])
+    await Promise.all([
+      redditStore.fetchSubreddits(),
+      redditStore.fetchPosts(selectedSubreddit.length > 0 ? selectedSubreddit[0] : undefined),
+      delay(750),
+    ])
     setRefreshing(false)
   }
 

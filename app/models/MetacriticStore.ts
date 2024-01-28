@@ -25,12 +25,9 @@ export const MetacriticStoreModel = types
       if (!sortByScore) {
         return posts
       }
-      return posts.sort(
-        (a: MetacriticPost, b: MetacriticPost) =>
-          b.score - a.score,
-      )
+      return posts.sort((a: MetacriticPost, b: MetacriticPost) => b.score - a.score)
     },
   }))
 
-export interface MetacriticStore extends Instance<typeof MetacriticStoreModel> { }
-export interface MetacriticStoreSnapshot extends SnapshotOut<typeof MetacriticStoreModel> { }
+export interface MetacriticStore extends Instance<typeof MetacriticStoreModel> {}
+export interface MetacriticStoreSnapshot extends SnapshotOut<typeof MetacriticStoreModel> {}
