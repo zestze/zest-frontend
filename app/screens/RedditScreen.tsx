@@ -136,9 +136,14 @@ const RedditPostCard = observer(({ post }: { post: RedditPost }) => {
           <Text style={$metadataText} size="xxs">
             {post.createdAt}
           </Text>
+          {post.isComment ? (
+            <Text style={$metadataText} size="xxs">
+              comment
+            </Text>
+          ) : undefined}
         </View>
       }
-      content={post.text}
+      content={post.actualTitle}
     ></Card>
   )
 })

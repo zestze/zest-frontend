@@ -10,20 +10,34 @@ export const RedditPostModel = types
     title: "",
     name: "",
     created_utc: 0.0,
+    link_title: types.maybeNull(types.string),
+    body: types.maybeNull(types.string),
   })
   .views((post) => ({
     get createdAt(): string {
       const dt = new Date(post.created_utc * 1e3)
-      return dt.toDateString()
+      return formatter.format(dt)
     },
-    get text(): string {
-      if (post.name.startsWith("t3")) {
+    get actualTitle(): string {
+      if (!isComment(post.name)) {
         return post.title
       }
-      return "<saved comment>"
+      return post.link_title !== null ? post.link_title : "<saved comment>"
+    },
+    get isComment(): boolean {
+      return isComment(post.name)
     },
   }))
   .actions(withSetPropAction)
+
+const isComment = (name: string): boolean => name.startsWith("t1")
+// see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toLocaleDateString
+// for why this is in global scope
+const formatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  year: "numeric",
+  day: "numeric",
+})
 
 export interface RedditPost extends Instance<typeof RedditPostModel> {}
 export interface RedditPostSnapshotOut extends SnapshotOut<typeof RedditPostModel> {}
