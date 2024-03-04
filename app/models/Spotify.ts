@@ -5,7 +5,7 @@ export const SpotifyArtistModel = types
   .model("SpotifyArtist")
   .props({
     name: types.identifier, // string key used in map to uniquely identify
-    plays: types.number,
+    listens: types.number,
   })
   .actions(withSetPropAction)
 

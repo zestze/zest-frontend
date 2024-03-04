@@ -8,10 +8,15 @@
 import { ApiResponse, ApisauceInstance, create } from "apisauce"
 import Config from "../../config"
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
-import type { ApiConfig, ApiDropletResponse, MetacriticItem, RedditItem } from "./api.types"
+import type {
+  ApiConfig,
+  ApiDropletResponse,
+  MetacriticItem,
+  NameWithListens,
+  RedditItem,
+} from "./api.types"
 import type { RedditPostSnapshotIn } from "../../models/RedditPost"
 import { MetacriticPostSnapshotIn } from "app/models/Metacritic"
-import { SpotifyArtistSnapshotIn } from "app/models/Spotify"
 
 /**
  * Configuring the apisauce instance.
@@ -19,10 +24,6 @@ import { SpotifyArtistSnapshotIn } from "app/models/Spotify"
 export const DEFAULT_API_CONFIG: ApiConfig = {
   url: Config.API_URL,
   timeout: 10000,
-}
-
-interface SpotifyArtistMap {
-  [key: string]: SpotifyArtistSnapshotIn
 }
 
 /**
@@ -135,7 +136,7 @@ export class Api {
   ): Promise<
     | {
         kind: "ok"
-        artists: SpotifyArtistMap
+        artists: NameWithListens[]
       }
     | GeneralApiProblem
   > {
@@ -150,15 +151,7 @@ export class Api {
 
     try {
       if (response.data === undefined) return { kind: "bad-data" }
-      // TODO(zeke): there _must_ be a better way of doing this!
-      const artists: SpotifyArtistMap = {}
-      for (const [key, value] of Object.entries(response.data?.artists)) {
-        artists[key] = {
-          name: key,
-          plays: value,
-        }
-      }
-      return { kind: "ok", artists }
+      return { kind: "ok", artists: response.data?.artists }
     } catch (e) {
       if (__DEV__ && e instanceof Error) {
         console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)

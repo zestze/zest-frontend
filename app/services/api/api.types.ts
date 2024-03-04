@@ -51,15 +51,16 @@ export interface MetacriticItem {
   release_date: string
 }
 
-export interface PlaysByArtist {
-  [key: string]: number
+export interface NameWithListens {
+  name: string
+  listens: number
 }
 
 // union of all responses
 export interface ApiDropletResponse {
   posts: RedditItem[] | MetacriticItem[]
   subreddits: string[]
-  artists: PlaysByArtist
+  artists: NameWithListens[]
 }
 
 /**

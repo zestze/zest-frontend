@@ -38,11 +38,13 @@ export const SpotifyScreen: FC<DemoTabScreenProps<"Spotify">> = observer((_props
     setRefreshing(false)
   }
 
+  const artists = spotifyStore.artistsWithListens.slice()
+
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContentContainer}>
       <ListView<SpotifyArtist>
         contentContainerStyle={$listContentContainer}
-        data={spotifyStore.artistsSorted()}
+        data={artists}
         refreshing={refreshing}
         onRefresh={manualRefresh}
         estimatedItemSize={50}
@@ -93,7 +95,7 @@ const SpotifyArtistCard = observer(({ artist }: { artist: SpotifyArtist }) => {
       HeadingComponent={
         <View style={$metadata}>
           <Text style={$metadataText} size="xxs">
-            {artist.plays}
+            {artist.listens} listens
           </Text>
         </View>
       }
