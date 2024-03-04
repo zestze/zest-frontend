@@ -11,6 +11,7 @@ import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
 import type { ApiConfig, ApiDropletResponse, MetacriticItem, RedditItem } from "./api.types"
 import type { RedditPostSnapshotIn } from "../../models/RedditPost"
 import { MetacriticPostSnapshotIn } from "app/models/Metacritic"
+import { SpotifyArtistSnapshotIn } from "app/models/Spotify"
 
 /**
  * Configuring the apisauce instance.
@@ -18,6 +19,10 @@ import { MetacriticPostSnapshotIn } from "app/models/Metacritic"
 export const DEFAULT_API_CONFIG: ApiConfig = {
   url: Config.API_URL,
   timeout: 10000,
+}
+
+interface SpotifyArtistMap {
+  [key: string]: SpotifyArtistSnapshotIn
 }
 
 /**
@@ -124,11 +129,48 @@ export class Api {
     }
   }
 
+  async getSpotifyArtists(
+    startTime: Date,
+    endTime?: Date,
+  ): Promise<
+    | {
+        kind: "ok"
+        artists: SpotifyArtistMap
+      }
+    | GeneralApiProblem
+  > {
+    let url = `v1/spotify/artists?start=${startTime.toISOString()}`
+    if (endTime !== undefined) url = `${url}&end=${endTime.toISOString()}`
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(url)
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) return problem
+    }
+
+    try {
+      if (response.data === undefined) return { kind: "bad-data" }
+      // TODO(zeke): there _must_ be a better way of doing this!
+      const artists: SpotifyArtistMap = {}
+      for (const [key, value] of Object.entries(response.data?.artists)) {
+        artists[key] = {
+          name: key,
+          plays: value,
+        }
+      }
+      return { kind: "ok", artists }
+    } catch (e) {
+      if (__DEV__ && e instanceof Error) {
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+      }
+      return { kind: "bad-data" }
+    }
+  }
+
   async loginUser(
     username: string,
     password: string,
   ): Promise<{ kind: "ok"; token: string; expiresAt: Date } | GeneralApiProblem> {
-    console.log(`username: ${username} password: ${password}`)
     const response: ApiResponse<ApiDropletResponse> = await this.apisauce.post(
       `login`,
       JSON.stringify({ username, password }),

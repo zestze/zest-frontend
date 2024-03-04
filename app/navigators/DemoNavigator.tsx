@@ -8,6 +8,7 @@ import { translate } from "../i18n"
 import { DemoDebugScreen } from "../screens"
 import { RedditScreen } from "../screens/RedditScreen"
 import { MetacriticScreen } from "../screens/MetacriticScreen"
+import { SpotifyScreen } from "../screens/SpotifyScreen"
 import { HomeScreen } from "../screens/HomeScreen"
 import { colors, spacing, typography } from "../theme"
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator"
@@ -18,6 +19,7 @@ export type DemoTabParamList = {
   Reddit: undefined
   Metacritic: undefined
   Home: undefined
+  Spotify: undefined
 }
 
 /**
@@ -32,6 +34,7 @@ export type DemoTabScreenProps<T extends keyof DemoTabParamList> = CompositeScre
 
 const Tab = createBottomTabNavigator<DemoTabParamList>()
 
+// TODO(zeke): use spotify logo for tab!
 export function DemoNavigator() {
   const { bottom } = useSafeAreaInsets()
 
@@ -79,6 +82,18 @@ export function DemoNavigator() {
           tabBarLabel: "Reddit",
           tabBarIcon: ({ focused }) => (
             <Icon icon="reddit" color={focused ? colors.tint : undefined} size={30} />
+          ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Spotify"
+        component={SpotifyScreen}
+        options={{
+          tabBarAccessibilityLabel: "Spotify",
+          tabBarLabel: "Spotify",
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="podcast" color={focused ? colors.tint : undefined} size={30} />
           ),
         }}
       />

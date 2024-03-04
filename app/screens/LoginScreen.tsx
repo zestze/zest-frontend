@@ -16,6 +16,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
+  // TODO(zeke): rename authEmail to username!
   const {
     authenticationStore: {
       authEmail,
@@ -31,8 +32,8 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     // Here is where you could fetch credentials from keychain or storage
     // and pre-fill the form fields.
     // TODO(zeke): load from keychain!
-    setAuthEmail("example")
-    setAuthPassword("example")
+    setAuthEmail("")
+    setAuthPassword("")
 
     // Return a "cleanup" function that React will run when the component unmounts
     return () => {
@@ -81,6 +82,7 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     [isAuthPasswordHidden],
   )
 
+  // TODO(zeke): change mentions of email to username!
   return (
     <Screen
       preset="auto"
@@ -95,8 +97,9 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         onChangeText={setAuthEmail}
         containerStyle={$textField}
         autoCapitalize="none"
-        autoComplete="email"
+        autoComplete="username"
         autoCorrect={false}
+        importantForAutofill="yes"
         keyboardType="email-address"
         labelTx="loginScreen.emailFieldLabel"
         placeholderTx="loginScreen.emailFieldPlaceholder"
@@ -111,8 +114,9 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
         onChangeText={setAuthPassword}
         containerStyle={$textField}
         autoCapitalize="none"
-        autoComplete="password"
+        autoComplete="current-password"
         autoCorrect={false}
+        importantForAutofill="yes"
         secureTextEntry={isAuthPasswordHidden}
         labelTx="loginScreen.passwordFieldLabel"
         placeholderTx="loginScreen.passwordFieldPlaceholder"
