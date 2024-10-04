@@ -26,6 +26,12 @@ export const DEFAULT_API_CONFIG: ApiConfig = {
   timeout: 10000,
 }
 
+// TODO(zeke): is this the best place for this?
+export interface MetacriticTitles {
+  title: string
+  medium: string
+};
+
 /**
  * Manages all requests to the API. You can use this class to build out
  * various requests that you need to call from your backend API.
@@ -130,14 +136,46 @@ export class Api {
     }
   }
 
+  // TODO(zeke): does kind need to be created?
+  async saveMetacriticPosts(
+    ids: number[],
+    action?: string | undefined,
+  ): Promise<{ kind: "ok" } | GeneralApiProblem> {
+    if (action === undefined) {
+      action = "saved"
+    }
+    const response = await this.apisauce.patch(
+      `v1/metacritic/posts`,
+      JSON.stringify({ posts: ids, action: action })
+    )
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response);
+      if (problem) {
+        return problem;
+      }
+    }
+    try {
+      if (response.data === undefined) {
+        return { kind: "bad-data" };
+      }
+      return { kind: "ok" };
+    } catch (e) {
+      if (__DEV__ && e instanceof Error) {
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack);
+      }
+      return { kind: "bad-data" };
+    }
+  }
+
   async getSpotifyArtists(
     startTime: Date,
     endTime?: Date,
   ): Promise<
     | {
-        kind: "ok"
-        artists: NameWithListens[]
-      }
+      kind: "ok"
+      artists: NameWithListens[]
+    }
     | GeneralApiProblem
   > {
     let url = `v1/spotify/artists?start=${startTime.toISOString()}`
