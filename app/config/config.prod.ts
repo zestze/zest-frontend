@@ -8,5 +8,6 @@
 export default {
   // API_URL: "CHANGEME",
   // API_URL: "http://164.90.252.244/v1/",
-  API_URL: "https://api.zekereyna.dev/",
+  // API_URL: "https://api.zekereyna.dev/",
+  API_URL: "https://api.zeke.reyna.dev/",
 }
