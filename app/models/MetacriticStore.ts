@@ -18,6 +18,14 @@ export const MetacriticStoreModel = types
         console.error(`Error fetching posts: ${JSON.stringify(response)}`)
       }
     },
+    async savePost(id: number) {
+      const response = await api.saveMetacriticPosts([id]);
+      if (response.kind === "ok") {
+        // TODO(zeke): save posts!
+      } else {
+        console.error(`Error saving posts: ${JSON.stringify(response)}`);
+      }
+    },
   }))
   .views((store) => ({
     postsForDisplay(sortByScore = false): MetacriticPost[] {
@@ -29,5 +37,5 @@ export const MetacriticStoreModel = types
     },
   }))
 
-export interface MetacriticStore extends Instance<typeof MetacriticStoreModel> {}
-export interface MetacriticStoreSnapshot extends SnapshotOut<typeof MetacriticStoreModel> {}
+export interface MetacriticStore extends Instance<typeof MetacriticStoreModel> { }
+export interface MetacriticStoreSnapshot extends SnapshotOut<typeof MetacriticStoreModel> { }
