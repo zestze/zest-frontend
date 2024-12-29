@@ -9,6 +9,8 @@ export const MetacriticPostModel = types
     score: 0,
     description: "",
     release_date: types.Date,
+    id: types.number,
+    action: "", // optional -- the reason for why it was saved
   })
   .actions(withSetPropAction)
 

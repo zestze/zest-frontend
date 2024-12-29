@@ -49,6 +49,11 @@ export interface MetacriticItem {
   score: number
   description: string
   release_date: string
+  id: number
+}
+
+export interface MetacriticSavedItem extends MetacriticItem {
+  action: string
 }
 
 export interface NameWithListens {
