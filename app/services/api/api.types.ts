@@ -52,6 +52,10 @@ export interface MetacriticItem {
   id: number
 }
 
+export interface MetacriticSavedItem extends MetacriticItem {
+  action: string
+}
+
 export interface NameWithListens {
   name: string
   listens: number

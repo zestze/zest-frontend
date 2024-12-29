@@ -10,9 +10,10 @@ export const MetacriticPostModel = types
     description: "",
     release_date: types.Date,
     id: types.number,
+    action: "", // optional -- the reason for why it was saved
   })
   .actions(withSetPropAction)
 
-export interface MetacriticPost extends Instance<typeof MetacriticPostModel> { }
-export interface MetacriticPostSnapshotOut extends SnapshotOut<typeof MetacriticPostModel> { }
-export interface MetacriticPostSnapshotIn extends SnapshotIn<typeof MetacriticPostModel> { }
+export interface MetacriticPost extends Instance<typeof MetacriticPostModel> {}
+export interface MetacriticPostSnapshotOut extends SnapshotOut<typeof MetacriticPostModel> {}
+export interface MetacriticPostSnapshotIn extends SnapshotIn<typeof MetacriticPostModel> {}
