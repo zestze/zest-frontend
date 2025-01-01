@@ -57,35 +57,9 @@ const redditQueries: ManifestQuery = {
     ],
 }
 
-/*
-type ManifestQueries = {
-    package: {
-        $: {
-            "android:name": string;
-        };
-    }[];
-    intent: {
-        action: {
-            $: {
-                "android:name": string;
-            };
-        };
-        category: {
-            $: {
-                "android:name": string;
-            };
-        };
-        data: {
-            $: {
-                "android:scheme": string;
-            };
-        };
-    }[];
-};
-*/
-
 // copied from `@expo/config-plugins/build/android/Manifest.d.ts`
 // when upgrading to expo@50.0.0
+// modified when upgrading to expo@51.0.0
 type StringBoolean = 'true' | 'false';
 type AndroidManifestAttributes = {
     'android:name': string | 'android.intent.action.VIEW';
@@ -127,7 +101,7 @@ type ManifestQuery = {
         $: {
             'android:authorities': string;
         };
-    };
+    }[];
 };
 // copied from `@expo/config-plugins/build/android/Manifest.d.ts`
 
