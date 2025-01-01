@@ -21,6 +21,7 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
       ...existingPlugins,
       require("./plugins/withSplashScreen").withSplashScreen,
       require("./plugins/withReddit").withReddit,
+      "expo-font",
     ],
   }
 }

@@ -17,7 +17,8 @@ const withAndroidReddit: ConfigPlugin = (config) => {
         //const queries: ManifestQueries[] = oldManifest.queries ?? [];
         const manifest: ManifestWithQueries = {
             ...oldManifest,
-            queries: [...(oldManifest.queries ?? []), ...redditQueries],
+            //queries: oldManifest.queries,
+            queries: [...(oldManifest.queries ?? []), redditQueries],
         }
         config.modResults.manifest = manifest
 
@@ -27,7 +28,7 @@ const withAndroidReddit: ConfigPlugin = (config) => {
 
 // copying this from https://github.com/expo/config-plugins/issues/123
 // the category, etc. might not all be super relevant?
-const redditQueries: ManifestQueries[] = [{
+const redditQueries: ManifestQuery = {
     package: [
         {
             $: {
@@ -37,25 +38,26 @@ const redditQueries: ManifestQueries[] = [{
     ],
     intent: [
         {
-            action: {
+            action: [{
                 $: {
                     "android:name": "android.intent.action.VIEW",
                 },
-            },
-            category: {
+            }],
+            category: [{
                 $: {
                     "android:name": "android.intent.category.BROWSABLE",
                 },
-            },
-            data: {
+            }],
+            data: [{
                 $: {
                     "android:scheme": "https",
                 },
-            },
+            }],
         },
     ],
-}]
+}
 
+/*
 type ManifestQueries = {
     package: {
         $: {
@@ -80,7 +82,55 @@ type ManifestQueries = {
         };
     }[];
 };
+*/
+
+// copied from `@expo/config-plugins/build/android/Manifest.d.ts`
+// when upgrading to expo@50.0.0
+type StringBoolean = 'true' | 'false';
+type AndroidManifestAttributes = {
+    'android:name': string | 'android.intent.action.VIEW';
+    'tools:node'?: string | 'remove';
+};
+type ManifestAction = {
+    $: AndroidManifestAttributes;
+};
+type ManifestCategory = {
+    $: AndroidManifestAttributes;
+};
+type ManifestData = {
+    $: {
+        [key: string]: string | undefined;
+        'android:host'?: string;
+        'android:pathPrefix'?: string;
+        'android:scheme'?: string;
+    };
+};
+
+type ManifestIntentFilter = {
+    $?: {
+        'android:autoVerify'?: StringBoolean;
+        'data-generated'?: StringBoolean;
+    };
+    action?: ManifestAction[];
+    data?: ManifestData[];
+    category?: ManifestCategory[];
+}
+type ManifestQueryIntent = Omit<ManifestIntentFilter, '$'>;
+type ManifestQuery = {
+    package: {
+        $: {
+            'android:name': string;
+        };
+    }[];
+    intent?: ManifestQueryIntent[];
+    provider?: {
+        $: {
+            'android:authorities': string;
+        };
+    };
+};
+// copied from `@expo/config-plugins/build/android/Manifest.d.ts`
 
 type ManifestWithQueries = AndroidManifest["manifest"] & {
-    queries?: ManifestQueries[]
+    queries?: ManifestQuery[]
 }
