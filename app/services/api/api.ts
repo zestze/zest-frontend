@@ -12,6 +12,7 @@ import type {
   ApiConfig,
   ApiDropletResponse,
   MetacriticItem,
+  MetacriticSavedItem,
   NameWithListens,
   RedditItem,
 } from "./api.types"
@@ -30,7 +31,7 @@ export const DEFAULT_API_CONFIG: ApiConfig = {
 export interface MetacriticTitles {
   title: string
   medium: string
-};
+}
 
 /**
  * Manages all requests to the API. You can use this class to build out
@@ -145,26 +146,62 @@ export class Api {
       action = "saved"
     }
     const response = await this.apisauce.patch(
-      `v1/metacritic/posts`,
-      JSON.stringify({ posts: ids, action: action })
+      `v1/metacritic/posts/saved`,
+      JSON.stringify({ posts: ids, action }),
     )
 
     if (!response.ok) {
-      const problem = getGeneralApiProblem(response);
+      const problem = getGeneralApiProblem(response)
       if (problem) {
-        return problem;
+        return problem
       }
     }
     try {
       if (response.data === undefined) {
-        return { kind: "bad-data" };
+        return { kind: "bad-data" }
       }
-      return { kind: "ok" };
+      return { kind: "ok" }
     } catch (e) {
       if (__DEV__ && e instanceof Error) {
-        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack);
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
       }
-      return { kind: "bad-data" };
+      return { kind: "bad-data" }
+    }
+  }
+
+  async getSavedMetacriticPosts(
+    action?: string | undefined,
+  ): Promise<{ kind: "ok"; posts: MetacriticPostSnapshotIn[] } | GeneralApiProblem> {
+    if (action === undefined) {
+      action = "saved"
+    }
+
+    const response: ApiResponse<ApiDropletResponse> = await this.apisauce.get(
+      `v1/metacritic/posts/saved`,
+    )
+
+    if (!response.ok) {
+      const problem = getGeneralApiProblem(response)
+      if (problem) {
+        return problem
+      }
+    }
+    try {
+      const rawData = response.data
+      // BE responds with same sata as `posts` but with additional `action` field per item
+      const posts = (rawData?.posts as MetacriticSavedItem[]).map((raw: MetacriticItem) => ({
+        ...raw,
+        release_date: new Date(raw.release_date as string),
+      }))
+      if (response.data === undefined) {
+        return { kind: "bad-data" }
+      }
+      return { kind: "ok", posts }
+    } catch (e) {
+      if (__DEV__ && e instanceof Error) {
+        console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
+      }
+      return { kind: "bad-data" }
     }
   }
 
@@ -173,9 +210,9 @@ export class Api {
     endTime?: Date,
   ): Promise<
     | {
-      kind: "ok"
-      artists: NameWithListens[]
-    }
+        kind: "ok"
+        artists: NameWithListens[]
+      }
     | GeneralApiProblem
   > {
     let url = `v1/spotify/artists?start=${startTime.toISOString()}`
