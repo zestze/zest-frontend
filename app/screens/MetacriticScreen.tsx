@@ -54,14 +54,21 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
     }
     ;(async function load() {
       setIsLoading(true)
-      await metacriticStore.fetchPosts(medium, startYear, endYear)
+      await metacriticStore
+        .fetchPosts(medium, startYear, endYear)
+        .then(() => metacriticStore.fetchSavedPosts())
       setIsLoading(false)
     })()
   }, [metacriticStore, medium, startYear, endYear])
 
   async function manualRefresh() {
     setRefreshing(true)
-    await Promise.all([metacriticStore.fetchPosts(medium, startYear, endYear), delay(750)])
+    await Promise.all([
+      metacriticStore
+        .fetchPosts(medium, startYear, endYear)
+        .then(() => metacriticStore.fetchSavedPosts()),
+      delay(750),
+    ])
     setRefreshing(false)
   }
 

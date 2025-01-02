@@ -62,8 +62,10 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       setIsSubmitted(false)
       setAuthEmail("")
       setAuthPassword("")
+    } else {
+      // TODO(zeke): need to pop up an alert modal or something to let the user know if something internal broke, OR if it was a bad password.
+      console.error(`error logging user in: ${response.kind}`)
     }
-    // TODO(zeke): prompt user if login failed!
   }
 
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
