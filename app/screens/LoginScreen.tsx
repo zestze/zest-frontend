@@ -16,6 +16,9 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   const [isAuthPasswordHidden, setIsAuthPasswordHidden] = useState(true)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [attemptsCount, setAttemptsCount] = useState(0)
+  const [invalidAttempt, setInvalidAttempt] = useState(false)
+  const [internalError, setInternalError] = useState(false)
+
   // TODO(zeke): rename authEmail to username!
   const {
     authenticationStore: {
@@ -42,11 +45,22 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
     }
   }, [])
 
-  const error = isSubmitted ? validationError : ""
+  let error = ""
+  if (isSubmitted) {
+    if (validationError !== "") {
+      error = validationError
+    } else if (invalidAttempt) {
+      error = "invalid username or password"
+    } else if (internalError) {
+      error = "an unexpected internal error occurred"
+    }
+  }
 
   async function login() {
     setIsSubmitted(true)
     setAttemptsCount(attemptsCount + 1)
+    setInvalidAttempt(false)
+    setInternalError(false)
 
     if (validationError) return
 
@@ -62,9 +76,14 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
       setIsSubmitted(false)
       setAuthEmail("")
       setAuthPassword("")
+    } else if (response.kind === "unauthorized") {
+      // BE also responds with `{"reason": "invalid_username"}` and `{"reason": "invalid_password"}` if we want further resolution.
+      setInvalidAttempt(true)
     } else {
-      // TODO(zeke): need to pop up an alert modal or something to let the user know if something internal broke, OR if it was a bad password.
+      // other, unknown error
       console.error(`error logging user in: ${response.kind}`)
+      console.error(`additional context: ${JSON.stringify(response)}`)
+      setInternalError(true)
     }
   }
 

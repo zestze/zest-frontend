@@ -187,9 +187,9 @@ export class Api {
       }
     }
     try {
-      const rawData = response.data
+      const rawPosts = response.data?.posts ?? []
       // BE responds with same sata as `posts` but with additional `action` field per item
-      const posts = (rawData?.posts as MetacriticSavedItem[]).map((raw: MetacriticItem) => ({
+      const posts = (rawPosts as MetacriticSavedItem[]).map((raw: MetacriticItem) => ({
         ...raw,
         release_date: new Date(raw.release_date as string),
       }))
