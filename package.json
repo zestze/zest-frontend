@@ -32,6 +32,9 @@
   },
   "dependencies": {
     "@expo-google-fonts/space-grotesk": "^0.2.2",
+    "@expo/config-plugins": "^9.0.0",
+    "@expo/metro-config": "^0.19.0",
+    "@expo/prebuild-config": "^8.0.0",
     "@gorhom/bottom-sheet": "^4.6.0",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/bottom-tabs": "^6.3.2",
@@ -39,6 +42,7 @@
     "@react-navigation/native-stack": "^6.0.2",
     "@shopify/flash-list": "1.7.1",
     "apisauce": "3.0.1",
+    "babel-plugin-module-resolver": "^5.0.2",
     "date-fns": "^2.30.0",
     "eas-cli": "^5.9.3",
     "expo": "^52.0.0",
