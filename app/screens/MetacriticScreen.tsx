@@ -1,7 +1,17 @@
 import React, { FC, useEffect, useState } from "react"
 import { DemoTabScreenProps } from "../navigators/DemoNavigator"
 import { observer } from "mobx-react-lite"
-import { Card, EmptyState, ListView, Screen, SelectField, Text, Toggle } from "../components"
+import {
+  Button,
+  Card,
+  EmptyState,
+  Icon,
+  ListView,
+  Screen,
+  SelectField,
+  Text,
+  Toggle,
+} from "../components"
 import { MetacriticPost } from "../models/Metacritic"
 import { openLinkInBrowser } from "app/utils/openLinkInBrowser"
 import {
@@ -52,7 +62,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
       setEndYear(defaultEndYear)
       return
     }
-    ;(async function load() {
+    ; (async function load() {
       setIsLoading(true)
       await metacriticStore
         .fetchPosts(medium, startYear, endYear)
@@ -71,6 +81,9 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
     ])
     setRefreshing(false)
   }
+
+  // TODO: implement unsaving!
+  const savePost = (id: number) => metacriticStore.savePost(id)
 
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContentContainer}>
@@ -135,7 +148,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
             </View>
           </View>
         }
-        renderItem={({ item }) => <MetacriticPostCard post={item} />}
+        renderItem={({ item }) => <MetacriticPostCard post={item} onSave={savePost} />}
       />
     </Screen>
   )
@@ -151,61 +164,97 @@ const years = range(minYear, maxYear + 1).map((y: number) => ({
   value: y.toString(),
 }))
 
-const MetacriticPostCard = observer(({ post }: { post: MetacriticPost }) => {
-  const handlePressCard = () => {
-    openLinkInBrowser(`https://www.metacritic.com${post.href}`)
-  }
+const MetacriticPostCard = observer(
+  ({ post, onSave }: { post: MetacriticPost; onSave: (id: number) => null }) => {
+    const sendToMetacritic = () => {
+      openLinkInBrowser(`https://www.metacritic.com${post.href}`)
+    }
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false)
+    const [modalVisible, setModalVisible] = useState<boolean>(false)
 
-  // <Pressable/> needs style={{ flex: 1 }}
-  //  so that it can extend the full size of the modal
-  //  it capturees all touches, excluding those of children
-  //  (such as the <Card/>)
+    const openModal = () => setModalVisible(true)
+    const closeModal = () => setModalVisible(false)
 
-  return (
-    <>
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <Pressable onPress={() => setModalVisible(false)} style={$screenContentContainer}>
-          <Card
-            style={$item}
-            onPress={handlePressCard}
-            content={post.description}
-            HeadingComponent={
-              <View style={{ marginBottom: spacing.md }}>
-                <Text weight="semiBold" size="md">
-                  {post.title}
-                </Text>
-              </View>
-            }
-          />
-        </Pressable>
-      </Modal>
-      <Card
-        style={$item}
-        verticalAlignment="force-footer-bottom"
-        onPress={() => setModalVisible(true)}
-        onLongPress={handlePressCard}
-        HeadingComponent={
-          <View style={$metadata}>
-            <Text style={$metadataText} size="xxs">
-              {post.score}
-            </Text>
-            <Text style={$metadataText} size="xxs">
-              {post.release_date.toDateString()}
-            </Text>
-          </View>
-        }
-        content={post.title}
-      />
-    </>
-  )
-})
+    // TODO: make api call to save or unsave... maybe interact with store?
+    // mostly works, but ran into an issue:
+    // [MobX] Since strict-mode is enabled, changing (observed) observable values without using an action is not allowed. Tried to modify: reference(MetacriticPost)[]
+    const toggleSaved = () => {
+      if (post.action) {
+        return // TODO: implement un-saving!
+      }
+      // here -- update store!
+      onSave(post.id)
+    }
+
+    // TODO: add animation here? also color heart based on if it's "saved" or not
+    const buttonLeftAccessory = () => (
+      <View style={$iconContainer}>
+        <Icon
+          icon="heart"
+          color={post.action ? colors.palette.primary400 : colors.palette.neutral800}
+        />
+      </View>
+    )
+
+    // <Pressable/> needs style={{ flex: 1 }}
+    //  so that it can extend the full size of the modal
+    //  it capturees all touches, excluding those of children
+    //  (such as the <Card/>)
+
+    return (
+      <>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <Pressable onPress={closeModal} style={$screenContentContainer}>
+            <Card
+              style={$item}
+              onPress={sendToMetacritic}
+              content={post.description}
+              HeadingComponent={
+                <View style={{ marginBottom: spacing.md }}>
+                  <Text weight="semiBold" size="md">
+                    {post.title}
+                  </Text>
+                </View>
+              }
+              FooterComponent={
+                <Button
+                  onPress={toggleSaved}
+                  onLongPress={toggleSaved}
+                  style={$favoriteButton}
+                  LeftAccessory={buttonLeftAccessory}
+                >
+                  <Text size="xxs" weight="medium" text={"favorite"} />
+                </Button>
+              }
+            />
+          </Pressable>
+        </Modal>
+        <Card
+          style={$item}
+          verticalAlignment="force-footer-bottom"
+          onPress={openModal}
+          onLongPress={sendToMetacritic}
+          HeadingComponent={
+            <View style={$metadata}>
+              <Text style={$metadataText} size="xxs">
+                {post.score}
+              </Text>
+              <Text style={$metadataText} size="xxs">
+                {post.release_date.toDateString()}
+              </Text>
+            </View>
+          }
+          content={post.title}
+        />
+      </>
+    )
+  },
+)
 
 type Setter<T> = React.Dispatch<React.SetStateAction<T>>
 
@@ -283,6 +332,52 @@ const $metadataText: TextStyle = {
   color: colors.textDim,
   marginEnd: spacing.md,
   marginBottom: spacing.xs,
+}
+
+/*
+// coppied from: 
+// https://github.com/infinitered/ignite/blob/de69eb1f4153717fda95a9f0a63b57d17fa4828a/boilerplate/app/screens/DemoPodcastListScreen.tsx
+const $favoriteButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  borderRadius: 17,
+  marginTop: spacing.md,
+  justifyContent: "flex-start",
+  backgroundColor: colors.palette.neutral300,
+  borderColor: colors.palette.neutral300,
+  paddingHorizontal: spacing.md,
+  paddingTop: spacing.xxxs,
+  paddingBottom: 0,
+  minHeight: 32,
+  alignSelf: "flex-start",
+})
+
+const $unFavoriteButton: ThemedStyle<ViewStyle> = ({ colors }) => ({
+  borderColor: colors.palette.primary100,
+  backgroundColor: colors.palette.primary100,
+})
+*/
+
+const $favoriteButton: ViewStyle = {
+  borderRadius: 17,
+  marginTop: spacing.md,
+  justifyContent: "flex-start",
+  backgroundColor: colors.palette.neutral300,
+  borderColor: colors.palette.neutral300,
+  paddingHorizontal: spacing.md,
+  paddingTop: spacing.xxxs,
+  paddingBottom: 0,
+  minHeight: 32,
+  alignSelf: "flex-end",
+}
+
+/*
+const $unFavoriteButton: ViewStyle = {
+  borderColor: colors.palette.primary100,
+  backgroundColor: colors.palette.primary100,
+}
+*/
+
+const $iconContainer: ViewStyle = {
+  marginEnd: spacing.sm,
 }
 
 const $emptyState: ViewStyle = {

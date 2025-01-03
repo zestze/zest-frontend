@@ -145,7 +145,7 @@ export class Api {
     if (action === undefined) {
       action = "saved"
     }
-    const response = await this.apisauce.patch(
+    const response = await this.apisauce.post(
       `v1/metacritic/posts/saved`,
       JSON.stringify({ posts: ids, action }),
     )
