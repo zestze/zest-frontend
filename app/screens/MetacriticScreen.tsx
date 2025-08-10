@@ -32,7 +32,7 @@ import { isRTL } from "app/i18n"
 
 const minYear = 1990
 const defaultStartYear = 2022
-const maxYear = 2024
+const maxYear = new Date().getFullYear()
 const defaultEndYear: number = maxYear
 
 export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((_props) => {
@@ -130,7 +130,7 @@ export const MetacriticScreen: FC<DemoTabScreenProps<"Metacritic">> = observer((
             <SelectHeader
               label="End Year"
               helper="Select your end year"
-              placeholder="e.g. 2024"
+              placeholder={`e.g. ${maxYear}`}
               value={endYear}
               setter={setEndYear}
               options={years}
