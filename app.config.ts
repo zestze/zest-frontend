@@ -19,10 +19,18 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
     ...config,
     plugins: [
       ...existingPlugins,
-      require("./plugins/withSplashScreen").withSplashScreen,
+      
       require("./plugins/withReddit").withReddit,
       "expo-font",
       "expo-asset",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
+      ]
     ],
   }
 }
